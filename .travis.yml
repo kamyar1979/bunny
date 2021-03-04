@@ -1,4 +1,9 @@
 # latest dmd, gdc and ldc
+language: d
+  "os": [
+    "mac",
+    "linux"
+  ],
 d:
   - dmd
   - gdc
