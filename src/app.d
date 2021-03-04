@@ -9,9 +9,7 @@ import requests;
 import std.string;
 import std.regex;
 import colorize;
-import std.algorithm.searching;
-import std.net.curl : HTTP;
-import std.typecons : tuple, Tuple;
+import std.algorithm.iteration;
 
 void prettyPrintValue(JSONValue value, ushort tabs = 0)
 {
@@ -76,13 +74,14 @@ struct ParsedArgs
     string[string] params;
 }
 
-enum Method : string {
-	get = "GET",
-	post = "POST",
-	put = "PUT",
-	patch = "PATCH",
-	del = "DELETE",
-	options = "OPTIONS"
+enum Method : string
+{
+    get = "GET",
+    post = "POST",
+    put = "PUT",
+    patch = "PATCH",
+    del = "DELETE",
+    options = "OPTIONS"
 }
 
 ParsedArgs parseArgs(string[] args)
@@ -98,7 +97,7 @@ ParsedArgs parseArgs(string[] args)
     case Method.patch:
     case Method.del:
     case Method.options:
-    
+
         assert(args.length >= 3);
         result.method = toUpper(args[1]);
         result.url = args[2];
@@ -115,27 +114,28 @@ ParsedArgs parseArgs(string[] args)
     }
     foreach (string item; data)
     {
-    	if(indexOf(item, ':') != -1) {
-    		auto val = split(item, ':');    		
-    		result.headers[val[0]] = strip(val[1], "\"");
-    	} else if (indexOf(item, '=') != -1) {
-    		auto val = split(item, '=');
-    		result.params[val[0]] = strip(val[1], "\"");
-    	}
+        if (indexOf(item, ':') != -1)
+        {        	
+            auto val = split(item, ':');            
+            result.headers[val[0]] = strip(val[1], "\"");
+        }
+        else if (indexOf(item, '=') != -1)
+        {
+            auto val = split(item, '=');
+            result.params[val[0]] = strip(val[1], "\"");
+        }
     }
     return result;
 }
 
 void main(string[] args)
 {
-	auto  p = parseArgs(args);
+    auto p = parseArgs(args);
     scope (exit)
     {
         auto req = Request();
         req.sslSetVerifyPeer(false);
-        foreach(key, value; p.headers) {
-        	req.headers[key] = value;
-        }
+        req.addHeaders(p.headers);
         Response res;
         switch (p.method)
         {
@@ -145,10 +145,10 @@ void main(string[] args)
             res = req.execute(p.method, p.url);
             break;
         case Method.post:
-	    case Method.put:
-	    case Method.patch:
-	        auto json = JSONValue(p.params);
-            res = req.execute(p.method, p.url, toJSON(json) , "application/json");
+        case Method.put:
+        case Method.patch:
+            auto json = JSONValue(p.params);
+            res = req.execute(p.method, p.url, toJSON(json), "application/json");
             break;
         default:
             res = req.get(p.url);
