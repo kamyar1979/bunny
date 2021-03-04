@@ -1,0 +1,8 @@
+{
+	"name" : "bunny",
+	"description" : "Hello World - A minimal DUB bundle.",
+	"dependencies" : {
+		"requests:vibed": "~>2",
+		"colorize": "~>1.0.5"
+	}
+}
