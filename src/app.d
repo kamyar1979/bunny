@@ -116,11 +116,11 @@ ParsedArgs parseArgs(string[] args)
     foreach (string item; data)
     {
     	if(indexOf(item, ':') != -1) {
-    		auto val = split(item, ':');
-    		result.headers[val[0]] = val[1];
+    		auto val = split(item, ':');    		
+    		result.headers[val[0]] = strip(val[1], "\"");
     	} else if (indexOf(item, '=') != -1) {
     		auto val = split(item, '=');
-    		result.params[val[0]] = val[1];    		
+    		result.params[val[0]] = strip(val[1], "\"");
     	}
     }
     return result;
@@ -140,11 +140,15 @@ void main(string[] args)
         switch (p.method)
         {
         case Method.get:
-            res = req.get(p.url);
+        case Method.del:
+        case Method.options:
+            res = req.execute(p.method, p.url);
             break;
         case Method.post:
+	    case Method.put:
+	    case Method.patch:
 	        auto json = JSONValue(p.params);
-            res = req.post(p.url, toJSON(json) , "application/json");
+            res = req.execute(p.method, p.url, toJSON(json) , "application/json");
             break;
         default:
             res = req.get(p.url);
