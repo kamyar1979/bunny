@@ -1,8 +1,9 @@
 {
-	"name" : "bunny",
-	"description" : "Hello World - A minimal DUB bundle.",
-	"dependencies" : {
-		"requests:vibed": "~>2",
-		"colorize": "~>1.0.5"
-	}
+    "name" : "bunny",
+    "description" : "Hello World - A minimal DUB bundle.",
+    "dependencies" : {
+        "colorize": "~>1.0.5",
+        "hunt-http": "~>0.7.1",
+        "urllibparse": "~>0.1.0"
+    }
 }
